@@ -17,8 +17,9 @@ var AbilityCalculator = {
 	},
 	
 	getHit: function(unit, weapon) {
-		// Hit rate formula. Weapon hit rate + (Ski * 3)
-		return weapon.getHit() + (RealBonus.getSki(unit) * 3);
+		// Hit rate formula. Weapon hit rate + (Ski * 2)
+		//return weapon.getHit() + (RealBonus.getSki(unit) * 3);
+		return weapon.getHit() + (RealBonus.getSki(unit) * 2) + RealBonus.getLuk(unit);
 	},
 	
 	getAvoid: function(unit) {
@@ -26,7 +27,8 @@ var AbilityCalculator = {
 		var cls = unit.getClass();
 		
 		// Avoid is (Spd * 2)
-		avoid = RealBonus.getSpd(unit) * 2;
+		//avoid = RealBonus.getSpd(unit) * 2;
+		avoid = RealBonus.getSpd(unit) * 2 + RealBonus.getLuk(unit);
 		
 		// If class type gains terrain bonus, add the avoid rate of terrain.
 		if (cls.getClassType().isTerrainBonusEnabled()) {
@@ -41,12 +43,14 @@ var AbilityCalculator = {
 	
 	getCritical: function(unit, weapon) {
 		// Critical rate formula. Ski + Weapon critical rate
-		return RealBonus.getSki(unit) + weapon.getCritical();
+		//return RealBonus.getSki(unit) + weapon.getCritical();
+		return weapon.getCritical();
 	},
 	
 	getCriticalAvoid: function(unit) {
 		// Luk is a critical avoid rate.
-		return RealBonus.getLuk(unit);
+		//return RealBonus.getLuk(unit);
+		return (0)
 	},
 	
 	getAgility: function(unit, weapon) {
