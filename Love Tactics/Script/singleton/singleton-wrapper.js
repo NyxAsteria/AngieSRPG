@@ -207,7 +207,7 @@ var DataConfig = {
 		}
 		
 		this._userOptionArray = [];
-		for (i = 0; i < 26; i++) {
+		for (i = 0; i < 27; i++) {
 			this._userOptionArray[i] = root.getUserExtension().isUserOptionOn(i);
 		}
 		
@@ -377,6 +377,10 @@ var DataConfig = {
 	
 	isSaveScreenExtended: function() {
 		return this._userOptionArray[25];
+	},
+	
+	isAISupportStatusAllowed: function() {
+		return this._userOptionArray[26];
 	},
 	
 	// --------------------------

@@ -135,6 +135,10 @@ var PlayerTurn = defineObject(BaseTurn,
 		return this._targetUnit;
 	},
 	
+	clearTurnTargetUnit: function() {
+		this._targetUnit = null;
+	},
+	
 	isRepeatMoveMode: function() {
 		return false;
 	},

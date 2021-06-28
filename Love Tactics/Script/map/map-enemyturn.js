@@ -34,6 +34,9 @@ var EnemyTurn = defineObject(BaseTurn,
 	openTurnCycle: function() {
 		this._prepareTurnMemberData();
 		this._completeTurnMemberData();
+		
+		AIFirstStage_UnitSupportStatusTable.resetTable();
+		AIFirstStage_TargetUnitSupportStatusTable.resetTable();
 	},
 	
 	moveTurnCycle: function() {

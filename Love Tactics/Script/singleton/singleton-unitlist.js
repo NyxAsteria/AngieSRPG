@@ -140,6 +140,10 @@ var TurnControl = {
 	turnEnd: function() {
 		// There is a possibility to be called from the event, call getBaseScene, not getCurrentScene.
 		if (root.getBaseScene() === SceneType.FREE) {
+			if (root.getCurrentSession().getTurnType() === TurnType.PLAYER) {
+				SceneManager.getActiveScene().getTurnObject().clearTurnTargetUnit();
+			}
+			
 			SceneManager.getActiveScene().turnEnd();
 		}
 	},
