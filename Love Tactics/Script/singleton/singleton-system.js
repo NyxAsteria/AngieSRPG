@@ -1857,12 +1857,24 @@ var Miscellaneous = {
 	// but sometimes, sprite is zoomed in/out, so get explicitly.
 	// If the first frame is zoomed in/out, the following frame is supposed as the same size.
 	getFirstKeySpriteSize: function(effectAnimeData, motionId) {
-		var frameIndex, spriteIndex;
+		var realEffect;
+		var frameIndex = 0;
+		
+		if (effectAnimeData !== null && typeof effectAnimeData._motion !== 'undefined') {
+			realEffect = effectAnimeData;
+			frameIndex = realEffect.getAnimeMotion().getFrameIndex();
+			effectAnimeData = realEffect.getAnimeMotion().getAnimeData();
+		}
+		
+		return this._getKeySpriteSizeInternal(effectAnimeData, motionId, frameIndex);
+	},
+	
+	_getKeySpriteSizeInternal: function(effectAnimeData, motionId, frameIndex) {
+		var spriteIndex;
 		var effectWidth = GraphicsFormat.EFFECT_WIDTH;
 		var effectHeight = GraphicsFormat.EFFECT_HEIGHT;
 		
 		if (effectAnimeData !== null) {
-			frameIndex = 0;
 			spriteIndex = effectAnimeData.getSpriteIndexFromType(motionId, frameIndex, SpriteType.KEY);
 			effectWidth = effectAnimeData.getSpriteWidth(motionId, frameIndex, spriteIndex);
 			effectHeight = effectAnimeData.getSpriteHeight(motionId, frameIndex, spriteIndex);

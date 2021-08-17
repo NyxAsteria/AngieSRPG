@@ -511,30 +511,39 @@ var ItemMessenger = defineObject(BaseObject,
 	},
 	
 	_moveQuestion: function() {
+		var result = MoveResult.CONTINUE;
+		
 		if (this._questionWindow.moveWindow() !== MoveResult.CONTINUE) {
 			if (this._questionWindow.getQuestionAnswer() === QuestionAnswer.YES) {
-				this._checkSelectionAndUse();
+				result = this._checkSelectionAndUse();
 			}
 			else {
 				return MoveResult.END;
 			}
 		}
 		
-		return MoveResult.CONTINUE;
+		return result;
 	},
 	
 	_moveSelection: function() {
+		var result = MoveResult.CONTINUE;
+		
 		if (this._itemSelection.moveItemSelectionCycle() !== MoveResult.CONTINUE) {
 			if (this._itemSelection.isSelection()) {
-				this._useItem();
-				this.changeCycleMode(ItemMessengerMode.USE);
+				if (this._useItem() === EnterResult.NOTENTER) {
+					this._isUsed = true;
+					return MoveResult.END;
+				}
+				else {
+					this.changeCycleMode(ItemMessengerMode.USE);
+				}
 			}
 			else {
 				return MoveResult.END;
 			}
 		}
 		
-		return MoveResult.CONTINUE;
+		return result;
 	},
 	
 	_moveUse: function() {
@@ -571,16 +580,24 @@ var ItemMessenger = defineObject(BaseObject,
 	},
 	
 	_checkSelectionAndUse: function() {
+		var result = MoveResult.CONTINUE;
+		
 		this._itemSelection = ItemPackageControl.getItemSelectionObject(this._item);
 		if (this._itemSelection !== null) {
 			if (this._itemSelection.enterItemSelectionCycle(this._unit, this._item) === EnterResult.NOTENTER) {
-				this._useItem();
-				this.changeCycleMode(ItemMessengerMode.USE);
+				if (this._useItem() === EnterResult.NOTENTER) {
+					this._isUsed = true;
+					return MoveResult.END;
+				}
+				else {
+					this.changeCycleMode(ItemMessengerMode.USE);
+				}
 			}
 			else {
 				this.changeCycleMode(ItemMessengerMode.SELECTION);
 			}
 		}
+		return result;
 	},
 	
 	_useItem: function() {
@@ -592,7 +609,8 @@ var ItemMessenger = defineObject(BaseObject,
 		itemTargetInfo.unit = this._unit;
 		itemTargetInfo.item = this._item;
 		itemTargetInfo.isPlayerSideCall = true;
-		this._itemUse.enterUseCycle(itemTargetInfo);
+		
+		return this._itemUse.enterUseCycle(itemTargetInfo);
 	}
 }
 );

@@ -45,7 +45,12 @@ var AnimeSimple = defineObject(BaseObject,
 		
 		pic = this._getMotionPicture(frameIndex, i, animeRenderParam);
 		if (pic !== null) {
-			pic.setAlpha(alpha);
+			if (alpha !== 0 && typeof obj.color !== 'undefined') {
+				pic.setColor(obj.color, alpha);
+			}
+			else {
+				pic.setAlpha(alpha);
+			}
 			pic.setDegree(degree);
 			if (this._animeData.isMirrorAllowed()) {
 				pic.setReverse(isReverse);
@@ -89,7 +94,12 @@ var AnimeSimple = defineObject(BaseObject,
 		
 		pic = this._getWeaponPicture(isShoot);
 		if (pic !== null) {
-			pic.setAlpha(alpha);
+			if (alpha !== 0 && typeof obj.color !== 'undefined') {
+				pic.setColor(obj.color, alpha);
+			}
+			else {
+				pic.setAlpha(alpha);
+			}
 			pic.setDegree(degree);
 			pic.setReverse(isReverse);
 			pic.setInterpolationMode(this._getWeaponInterpolationMode());
@@ -327,6 +337,7 @@ var AnimeMotion = defineObject(BaseObject,
 	_yKey: 0,
 	_xOffset: 0,
 	_yOffset: 0,
+	_realEffect: null,
 	
 	setMotionParam: function(motionParam) {
 		this._unit = motionParam.unit;
@@ -782,6 +793,10 @@ var AnimeMotion = defineObject(BaseObject,
 	_updatePos: function() {
 		var i, count, x, width, keyIndex;
 		var isAbsolute = this._animeData.isAbsoluteMotion(this._motionId);
+		
+		if (this._realEffect !== null) {
+			this._realEffect.updateKeyPos();
+		}
 		
 		if (isAbsolute) {
 			keyIndex = this._getSpriteIndexFromSpriteType(SpriteType.KEY, this._frameIndex);

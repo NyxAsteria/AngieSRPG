@@ -17,16 +17,16 @@ var AbilityCalculator = {
 	},
 	
 	getHit: function(unit, weapon) {
-		// Hit rate formula. Weapon hit rate + (Ski * 3)
-		return weapon.getHit() + (RealBonus.getSki(unit) * 3);
+		// Hit rate formula. Weapon hit rate + (Ski * 2) + Luk
+		return weapon.getHit() + (RealBonus.getSki(unit) * 2) + RealBonus.getLuk(unit);
 	},
 	
 	getAvoid: function(unit) {
 		var avoid, terrain;
 		var cls = unit.getClass();
 		
-		// Avoid is (Spd * 2)
-		avoid = RealBonus.getSpd(unit) * 2;
+		// Avoid is (Spd * 2) + Luk
+		avoid = RealBonus.getSpd(unit) * 2 + RealBonus.getLuk(unit);
 		
 		// If class type gains terrain bonus, add the avoid rate of terrain.
 		if (cls.getClassType().isTerrainBonusEnabled()) {
@@ -41,12 +41,14 @@ var AbilityCalculator = {
 	
 	getCritical: function(unit, weapon) {
 		// Critical rate formula. Ski + Weapon critical rate
-		return RealBonus.getSki(unit) + weapon.getCritical();
+		//return RealBonus.getSki(unit) + weapon.getCritical();
+		return RealBonus.getSki(unit)*2 + weapon.getCritical();
 	},
 	
 	getCriticalAvoid: function(unit) {
 		// Luk is a critical avoid rate.
-		return RealBonus.getLuk(unit);
+		//return RealBonus.getLuk(unit);
+		return 0;
 	},
 	
 	getAgility: function(unit, weapon) {
@@ -467,12 +469,16 @@ var Calculator = {
 	calculateSellPrice: function(item) {
 		var d;
 		var gold = item.getGold() / 2;
+		var limitMax = item.getLimitMax();
 		
-		if (item.getLimitMax() === 0) {
+		if (limitMax === 0) {
 			d = 1;
 		}
+		else if (limitMax === WeaponLimitValue.BROKEN) {
+			d = 0;
+		}
 		else {
-			d = item.getLimit() / item.getLimitMax();
+			d = item.getLimit() / limitMax;
 		}
 		
 		gold = Math.floor(gold * d);

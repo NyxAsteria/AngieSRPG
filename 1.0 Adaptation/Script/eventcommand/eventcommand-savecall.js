@@ -77,6 +77,10 @@ var SaveCallEventCommand = defineObject(BaseEventCommand,
 	},
 	
 	_getUnitFromUnitCommand: function() {
+		if (root.getCurrentSession().getTurnType() !== TurnType.PLAYER) {
+			return null;
+		}
+		
 		// You should not call root.getCurrentSession().getActiveEventUnit().
 		// When executing an AT event with "Player Turn Start" set, it refers to the last unit that acted on the enemy turn. 
 		return SceneManager.getActiveScene().getTurnObject().getTurnTargetUnit();

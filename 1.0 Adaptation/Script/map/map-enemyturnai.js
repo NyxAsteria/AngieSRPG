@@ -608,6 +608,217 @@ CombinationCollector.Skill = defineObject(BaseCombinationCollector,
 //------------------------------------------------------
 
 
+// Create a table of enemy units that will take an action on enemy phase and any support information they have.
+var AIFirstStage_UnitSupportStatusTable = {
+	_table: [],
+	
+	resetTable: function() {
+		this._table = [];
+	},
+	
+	registerUnit: function(unit) {
+		var i;
+		var length = this._table.length;
+		
+		// Check whether all enemy AI should take supports into account or not.
+		if (!this._isSupportStatusAllowed()) {
+			return;
+		}
+		
+		// Check whether the current enemy unit should take supports affecting themselves into account.
+		if (!this._isUnitAllowed(unit)) {
+			return;
+		}
+		
+		for (i = 0; i < length; i++) {
+			if (this._table[i].unit === unit) {
+				break;
+			}
+		}
+		
+		if (i === length) {
+			var obj = {};
+			obj.unit = unit;
+			obj.totalStatus = this._createStatus(unit);
+			this._table.push(obj);
+		}
+	},
+	
+	getTotalStatus: function(unit) {
+		var i;
+		var status = null;
+		var length = this._table.length;
+		
+		for (i = 0; i < length; i++) {
+			if (this._table[i].unit === unit) {
+				status = this._table[i].totalStatus;
+				break;
+			}
+		}
+		
+		return status;
+	},
+	
+	_createStatus: function(unit) {
+		var totalStatus = {};
+		
+		totalStatus.powerTotal = 0;
+		totalStatus.defenseTotal = 0;
+		totalStatus.hitTotal = 0;
+		totalStatus.avoidTotal = 0;
+		totalStatus.criticalTotal = 0;
+		totalStatus.criticalAvoidTotal = 0;
+		
+		// Perform a check to see if units have support skills that target themselves.
+		this._checkSelfSupportSkill(unit, totalStatus);
+		
+		// Perform a check to see if there is an enemy with support skills (possibly covering the entire map).
+		this._checkFriendSupportSkill(unit, totalStatus);
+		
+		return totalStatus;
+	},
+	
+	_checkSelfSupportSkill: function(unit, totalStatus) {
+		var i, skill;
+		var arr = SkillControl.getDirectSkillArray(unit, SkillType.SUPPORT, '');
+		var count = arr.length;
+		
+		for (i = 0; i < count; i++) {
+			skill = arr[i].skill;
+			if (skill.getRangeType() === SelectionRangeType.SELFONLY) {
+				this._addStatus(totalStatus, skill.getSupportStatus());
+				break;
+			}
+		}
+	},
+	
+	_checkFriendSupportSkill: function(unit, totalStatus) {
+		var i, j, list, count, targetUnit;
+		var listArray = SupportCalculator._getListArray(unit);
+		var listCount = listArray.length;
+		
+		for (i = 0; i < listCount; i++) {
+			list = listArray[i];
+			count = list.getCount();
+			for (j = 0; j < count; j++) {
+				targetUnit = list.getData(j);
+				if (unit === targetUnit) {
+					continue;
+				}
+				
+				this._checkFriendSupportSkillInternal(unit, targetUnit, totalStatus);
+			}
+		}
+	},
+	
+	_checkFriendSupportSkillInternal: function(unit, targetUnit, totalStatus) {
+		var i, skill;
+		var arr = SkillControl.getDirectSkillArray(unit, SkillType.SUPPORT, '');
+		var count = arr.length;
+		
+		for (i = 0; i < count; i++) {
+			skill = arr[i].skill;
+			if (skill.getRangeType() === SelectionRangeType.ALL) {
+				if (SupportCalculator._isSupportable(unit, targetUnit, skill)) {
+					this._addStatus(totalStatus, skill.getSupportStatus());
+				}
+				break;
+			}
+		}
+	},
+	
+	_addStatus: function(totalStatus, supportStatus) {
+		totalStatus.powerTotal += supportStatus.getPower();
+		totalStatus.defenseTotal += supportStatus.getDefense();
+		totalStatus.hitTotal += supportStatus.getHit();
+		totalStatus.avoidTotal += supportStatus.getAvoid();
+		totalStatus.criticalTotal += supportStatus.getCritical();
+		totalStatus.criticalAvoidTotal += supportStatus.getCriticalAvoid();
+	},
+	
+	_isSupportStatusAllowed: function() {
+		// Returning false means support skill checks are not performed, so processing is faster.
+		return DataConfig.isAISupportStatusAllowed();
+	},
+	
+	_isUnitAllowed: function(unit) {
+		return true;
+	}
+};
+
+// Create a table of targets (player and ally army units) that exist on enemy phase and the support information those targets possess.
+// Normally, when Target A receives support from Target B and Target B is defeated, the support information that Target A receives should change,
+// but it will remain the same.
+var AIFirstStage_TargetUnitSupportStatusTable = {
+	_table: [],
+	
+	resetTable: function() {
+		this._table = [];
+	},
+	
+	registerUnit: function(targetUnit) {
+		var i;
+		var length = this._table.length;
+		
+		// Check whether enemy AI should take targets' supports into account.
+		if (!this._isSupportStatusAllowed()) {
+			return;
+		}
+		
+		// Check whether this target's supports should be taken into account.
+		if (!this._isUnitAllowed(targetUnit)) {
+			return;
+		}
+		
+		for (i = 0; i < length; i++) {
+			if (this._table[i].targetUnit === targetUnit) {
+				break;
+			}
+		}
+		
+		if (i === length) {
+			var obj = {};
+			obj.targetUnit = targetUnit;
+			obj.totalStatus = this._createStatus(targetUnit);
+			this._table.push(obj);
+		}
+	},
+	
+	getTotalStatus: function(targetUnit) {
+		var i;
+		var status = null;
+		var length = this._table.length;
+		
+		for (i = 0; i < length; i++) {
+			if (this._table[i].targetUnit === targetUnit) {
+				status = this._table[i].totalStatus;
+				break;
+			}
+		}
+		
+		return status;
+	},
+	
+	_createStatus: function(targetUnit) {
+		// On enemy phase, targets (player and ally army units) won't move from their current location, so calling the method below will suffice.
+		return SupportCalculator.createTotalStatus(targetUnit);
+	},
+	
+	_isSupportStatusAllowed: function() {
+		// Returning false means support skill checks are not performed, so processing is faster.
+		return DataConfig.isAISupportStatusAllowed();
+	},
+	
+	_isUnitAllowed: function(targetUnit) {
+		// Ally Army units normally do not have supports set, so they are ignored.
+		return targetUnit.getUnitType() === UnitType.PLAYER;
+	}
+};
+
+
+//------------------------------------------------------
+
+
 var BaseAIScorer = defineObject(BaseObject,
 {
 	getScore: function(unit, combination) {
@@ -639,6 +850,9 @@ AIScorer.Weapon = defineObject(BaseAIScorer,
 		if (prevItemIndex === -1) {
 			return 0;
 		}
+		
+		AIFirstStage_UnitSupportStatusTable.registerUnit(unit);
+		AIFirstStage_TargetUnitSupportStatusTable.registerUnit(combination.targetUnit);
 		
 		score = this._getTotalScore(unit, combination);
 		
@@ -711,14 +925,14 @@ AIScorer.Weapon = defineObject(BaseAIScorer,
 			return combination.targetUnit.getHp() - 1;
 		}
 		
-		damage = DamageCalculator.calculateDamage(unit, combination.targetUnit, combination.item, false, null, null);
-		damage *= Calculator.calculateAttackCount(unit, combination.targetUnit, combination.item, null, null);
+		damage = DamageCalculator.calculateDamage(unit, combination.targetUnit, combination.item, false, this._getSupportStatus(unit), this._getTargetSupportStatus(combination.targetUnit), 0);
+		damage *= Calculator.calculateAttackCount(unit, combination.targetUnit, combination.item);
 		
 		return damage;
 	},
 	
 	_getHitScore: function(unit, combination) {
-		var hit = HitCalculator.calculateHit(unit, combination.targetUnit, combination.item, null, null);
+		var hit = HitCalculator.calculateHit(unit, combination.targetUnit, combination.item, this._getSupportStatus(unit), this._getTargetSupportStatus(combination.targetUnit));
 		
 		if (hit === 0) {
 			return 0;
@@ -729,7 +943,7 @@ AIScorer.Weapon = defineObject(BaseAIScorer,
 	},
 	
 	_getCriticalScore: function(unit, combination) {
-		var crt = CriticalCalculator.calculateCritical(unit, combination.targetUnit, combination.item, null, null);
+		var crt = CriticalCalculator.calculateCritical(unit, combination.targetUnit, combination.item, this._getSupportStatus(unit), this._getTargetSupportStatus(combination.targetUnit));
 		
 		if (crt === 0) {
 			return 0;
@@ -764,6 +978,14 @@ AIScorer.Weapon = defineObject(BaseAIScorer,
 		
 		UnitItemControl.setItem(unit, prevItemIndex, itemHead);
 		UnitItemControl.setItem(unit, 0, item);
+	},
+	
+	_getSupportStatus: function(unit) {
+		return AIFirstStage_UnitSupportStatusTable.getTotalStatus(unit);
+	},
+	
+	_getTargetSupportStatus: function(targetUnit) {
+		return AIFirstStage_TargetUnitSupportStatusTable.getTotalStatus(targetUnit);
 	}
 }
 );

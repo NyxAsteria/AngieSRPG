@@ -1299,6 +1299,11 @@ var RealEffect = defineObject(BaseCustomEffect,
 	
 	setHitCheck: function(isHitCheck) {
 		this._isHitCheck = isHitCheck;
+		
+		if (isHitCheck) {
+			this._motion._realEffect = this;
+			this.updateKeyPos();
+		}
 	},
 	
 	setEasyFlag: function(isEasy) {
@@ -1365,6 +1370,44 @@ var RealEffect = defineObject(BaseCustomEffect,
 	
 	getAnimeMotion: function() {
 		return this._motion;
+	},
+	
+	updateKeyPos: function() {
+		var isRight, pos;
+		
+		if (!this._isCurrentFrameCheck()) {
+			return;
+		}
+		
+		if (!this._isUpdatable()) {
+			return;
+		}
+	
+		if (root.getAnimePreference().isEffectDefaultStyle()) {
+			isRight = this._realBattle.getActiveBattler() === this._realBattle.getBattler(true);
+		}
+		else {
+			isRight = this._realBattle.getPassiveBattler() === this._realBattle.getBattler(true);
+		}
+		
+		pos = this._realBattle.getPassiveBattler().getAnimeMotion().getEffectPos(this, isRight);	
+		
+		this._motion._xKey = pos.x;
+		this._motion._yKey = pos.y;
+	},
+	
+	_isCurrentFrameCheck: function() {
+		return true;
+	},
+	
+	_isUpdatable: function() {
+		var motionCategoryType = this._realBattle.getPassiveBattler().getMotionCategoryType();
+		
+		if (motionCategoryType === MotionCategoryType.AVOID || motionCategoryType === MotionCategoryType.DAMAGE) {
+			return false;
+		}
+		
+		return true;
 	}
 }
 );
@@ -1760,8 +1803,9 @@ var UIBattleLayout = defineObject(BaseObject,
 	},
 	
 	_drawColor: function(rangeType) {
-		var effect, battler, motion;
+		var i, effect, battler, motion;
 		var effectArray = this._realBattle.getEffectArray();
+		var count = effectArray.length;
 		
 		this._drawColorAnime(rangeType);
 		
@@ -1775,18 +1819,19 @@ var UIBattleLayout = defineObject(BaseObject,
 			battler.getAnimeMotion().drawScreenColor();
 		}
 		
-		if (effectArray.length > 0) {
-			effect = effectArray[0];
+		for (i = 0; i < count; i++) {
+			effect = effectArray[i];
 			motion = effect.getAnimeMotion();
-			if (motion !== null && motion.getScreenEffectRangeType() === rangeType) {
+			if (motion !== null && motion.getBackgroundAnimeRangeType() === rangeType) {
 				motion.drawScreenColor();
 			}
 		}
 	},
 	
 	_drawColorAnime: function(rangeType) {
-		var effect, battler, motion;
+		var i, effect, battler, motion;
 		var effectArray = this._realBattle.getEffectArray();
+		var count = effectArray.length;
 		
 		battler = this._realBattle.getActiveBattler();
 		if (battler.getAnimeMotion().getBackgroundAnimeRangeType() === rangeType) {
@@ -1798,8 +1843,8 @@ var UIBattleLayout = defineObject(BaseObject,
 			battler.getAnimeMotion().drawBackgroundAnime();
 		}
 		
-		if (effectArray.length > 0) {
-			effect = effectArray[0];
+		for (i = 0; i < count; i++) {
+			effect = effectArray[i];
 			motion = effect.getAnimeMotion();
 			if (motion !== null && motion.getBackgroundAnimeRangeType() === rangeType) {
 				motion.drawBackgroundAnime();

@@ -467,12 +467,16 @@ var Calculator = {
 	calculateSellPrice: function(item) {
 		var d;
 		var gold = item.getGold() / 2;
+		var limitMax = item.getLimitMax();
 		
-		if (item.getLimitMax() === 0) {
+		if (limitMax === 0) {
 			d = 1;
 		}
+		else if (limitMax === WeaponLimitValue.BROKEN) {
+			d = 0;
+		}
 		else {
-			d = item.getLimit() / item.getLimitMax();
+			d = item.getLimit() / limitMax;
 		}
 		
 		gold = Math.floor(gold * d);

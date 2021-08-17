@@ -679,6 +679,7 @@ var EasyMapUnit = defineObject(BaseObject,
 		unitRenderParam.animationIndex = this._unitCounter.getAnimationIndexFromUnit(unit);
 		unitRenderParam.direction = this._direction;
 		unitRenderParam.alpha = this._alpha;
+		unitRenderParam.isScroll = this._isScroll();
 		
 		UnitRenderer.drawScrollUnit(unit, this._xPixel, this._yPixel, unitRenderParam);
 	},
@@ -701,6 +702,19 @@ var EasyMapUnit = defineObject(BaseObject,
 	
 	getMapUnitY: function() {
 		return this._yPixel;
+	},
+	
+	_isScroll: function() {
+		var isScroll;
+	
+		if (this._xScrollPrev === root.getCurrentSession().getScrollPixelX() && this._yScrollPrev === root.getCurrentSession().getScrollPixelY()) {
+			isScroll = false;
+		}
+		else {
+			isScroll = true;
+		}
+		
+		return isScroll;
 	},
 	
 	_moveNormal: function(isForward) {
