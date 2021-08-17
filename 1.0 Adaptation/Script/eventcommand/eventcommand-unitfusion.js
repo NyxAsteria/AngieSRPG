@@ -218,6 +218,9 @@ var CatchFusionAction = defineObject(BaseFusionAction,
 		this._doCatchAction();
 		
 		if (this._slideObject !== null) {
+			// Suppose "Catch" and "Release" have been set consecutively in an event command and the user pressed the skip key during catch.
+			// In this case, if the current slide value is not reset, it will affect the following release processing,
+			// so the endSlide method must be called.
 			this._slideObject.endSlide();
 		}
 	},

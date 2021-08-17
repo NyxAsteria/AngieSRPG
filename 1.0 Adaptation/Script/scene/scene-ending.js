@@ -49,6 +49,7 @@ var EndingScene = defineObject(BaseScene,
 	},
 	
 	_doEndAction: function() {
+		// All FlowEntry calls have been completed, so return to the title screen.
 		root.resetGame();
 	},
 	
