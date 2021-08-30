@@ -229,7 +229,7 @@ var RealBattle = defineObject(BaseBattle,
 		this._idleCounter = createObject(IdleCounter);
 		this._autoScroll = createObject(RealAutoScroll);
 		this._battleTransition = createObject(BattleTransition);
-		this._uiBattleLayout = createObject(UIBattleLayout);
+		this._uiBattleLayout = this._createUIBattleLayout();
 		
 		this._createBattleArea();
 	},
@@ -244,6 +244,10 @@ var RealBattle = defineObject(BaseBattle,
 		this._battleTable.setBattleObject(this);
 		this._battleTable.enterBattleStart();
 		this.changeCycleMode(RealBattleMode.BATTLESTART);
+	},
+	
+	_createUIBattleLayout: function() {
+		return createObject(UIBattleLayout);
 	},
 	
 	_createBattler: function() {
@@ -1843,9 +1847,12 @@ var UIBattleLayout = defineObject(BaseObject,
 			battler.getAnimeMotion().drawBackgroundAnime();
 		}
 		
+		// effectArray contains all effects currently being displayed.
+		// The damage pop-up inherited from BaseCustomEffect is included in the array.
 		for (i = 0; i < count; i++) {
 			effect = effectArray[i];
 			motion = effect.getAnimeMotion();
+			// Damage pop-up returns null in the getAnimeMotion method.
 			if (motion !== null && motion.getBackgroundAnimeRangeType() === rangeType) {
 				motion.drawBackgroundAnime();
 			}

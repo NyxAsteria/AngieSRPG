@@ -1860,6 +1860,7 @@ var Miscellaneous = {
 		var realEffect;
 		var frameIndex = 0;
 		
+		// Reference the current index of the animation frame if realEffect is designated in effectAnimeData.
 		if (effectAnimeData !== null && typeof effectAnimeData._motion !== 'undefined') {
 			realEffect = effectAnimeData;
 			frameIndex = realEffect.getAnimeMotion().getFrameIndex();

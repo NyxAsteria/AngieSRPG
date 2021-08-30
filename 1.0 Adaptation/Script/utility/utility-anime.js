@@ -875,10 +875,35 @@ var AnimeMotion = defineObject(BaseObject,
 			// Decide with func so that the launched sprite is not visible. 
 			return true;
 		}
+		else if (motionCategoryType === MotionCategoryType.THROW && this._isDualSprite(i, spriteType, motionCategoryType)) {
+			// When a thrown weapon is being focused on and its sprite is moving,
+			// it can be said that not only the weapon but also the sprite should be hidden.
+			return true;
+		}
 		else if (motionCategoryType === MotionCategoryType.SHOOT && spriteType === SpriteType.ARROW) {
 			// If "Archers", the arrow is always the non visible target.
 			// Decide that the case which is not to shoot an arrow is extremely rare.
 			return true;
+		}
+		
+		return false;
+	},
+	
+	_isDualSprite: function(spriteIndex, spriteType, motionCategoryType) {
+		var i, spriteTypeOther, xOther;
+		var count = this._animeData.getSpriteCount(this._motionId, this._frameIndex);
+		var x = this._animeData.getSpriteX(this._motionId, this._frameIndex, spriteType);
+		
+		for (i = 0; i < count; i++) {
+			spriteTypeOther = this._animeData.getSpriteType(this._motionId, this._frameIndex, i);
+			if (spriteType === SpriteType.OPTION && spriteTypeOther === SpriteType.WEAPON) {
+				xOther = this._animeData.getSpriteX(this._motionId, this._frameIndex, spriteTypeOther);
+				if (Math.abs(x - xOther) < 40) {
+					// If the current positions of the weapon and the sprite are not too far away from each other,
+					// both are handled as being thrown.
+					return true;
+				}
+			}
 		}
 		
 		return false;

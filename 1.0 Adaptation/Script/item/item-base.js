@@ -424,6 +424,7 @@ var ItemUseParent = defineObject(BaseObject,
 		
 		result = this._straightFlow.enterStraightFlow();
 		if (result === EnterResult.NOTENTER) {
+			// This code will be executed immediately if no experience or animation is set on the item.
 			this.decreaseItem();
 		}
 		

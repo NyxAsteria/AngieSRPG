@@ -63,6 +63,7 @@ var RecollectionScreen = defineObject(BaseScreen,
 		this._isAutoBackground = false;
 		this._scrollbar = createScrollbarObject(this._isThumbnailMode ? ThumbnailScrollbar : DictionaryScrollbar, this);
 		this._descriptionChanger = createObject(DescriptionChanger);
+		// Remember BGM so it can be played again when switching to the recollection screen.
 		this._baseMusicHandle = root.getMediaManager().getActiveMusicHandle();
 	},
 	

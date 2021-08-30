@@ -603,6 +603,8 @@ var EasyMapUnit = defineObject(BaseObject,
 		this._unitCounter = createObject(UnitCounter);
 		this._easyBattle = easyBattle;
 		
+		// Normally the scroll value will not change after the battle has already started,
+		// but just in case, the scroll value is saved before it can change.
 		this._xScrollPrev = root.getCurrentSession().getScrollPixelX();
 		this._yScrollPrev = root.getCurrentSession().getScrollPixelY();
 		
@@ -717,6 +719,9 @@ var EasyMapUnit = defineObject(BaseObject,
 			isScroll = false;
 		}
 		else {
+			// It is possible the current scroll value is not the same as it was when the battle started.
+			// For example, when Location Focus was executed and scroll occurred in a battle unit event.
+			// In cases like these, units should be displayed based on the updated scroll position, so specify true for isScroll.
 			isScroll = true;
 		}
 		
