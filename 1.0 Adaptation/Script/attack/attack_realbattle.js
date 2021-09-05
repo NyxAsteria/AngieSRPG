@@ -1404,6 +1404,8 @@ var RealEffect = defineObject(BaseCustomEffect,
 		return true;
 	},
 	
+	// In order to play an effect that continues shrinking even after "Detect Hit on this frame" has passed,
+	// this method ought to return true.
 	_isUpdatable: function() {
 		var motionCategoryType = this._realBattle.getPassiveBattler().getMotionCategoryType();
 		
@@ -1629,7 +1631,7 @@ var UIBattleLayout = defineObject(BaseObject,
 	_isMoveEnd: false,
 	_battleContainer: null,
 	
-	setBattlerAndParent: function (battlerRight, battlerLeft, realBattle) {
+	setBattlerAndParent: function(battlerRight, battlerLeft, realBattle) {
 		var unit, targetUnit;
 		
 		this._realBattle = realBattle;

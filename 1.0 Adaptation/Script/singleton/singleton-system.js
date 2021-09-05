@@ -191,6 +191,10 @@ var GameOverChecker = {
 		var list = PlayerList.getSortieList();
 		var isGameOver = false;
 		
+		if (root.getBaseScene() !== SceneType.FREE) {
+			return false;
+		}
+		
 		// If the player doesn't exist, game over.
 		if (list.getCount() === 0 && root.getCurrentSession().isMapState(MapStateType.PLAYERZEROGAMEOVER)) {
 			isGameOver = true;

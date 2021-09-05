@@ -637,7 +637,14 @@ MarshalCommand.ItemUse = defineObject(MarshalBaseCommand,
 	},
 	
 	notifyScreenClosed: function() {
+		var unitSelectWindow = this._parentMarshalScreen.getUnitSelectWindow();
+		var index = unitSelectWindow.getUnitSelectIndex();
+		
+		// If a resurrection item is used, the unit is restored to the list and must be rebuilt.
 		this._parentMarshalScreen.updateUnitList();
+		
+		// Prevent the scroll position from being initialized when the list is rebuilt.
+		unitSelectWindow.setUnitSelectIndex(index);
 	},
 	
 	_createScreenParam: function() {

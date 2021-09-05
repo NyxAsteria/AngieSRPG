@@ -508,6 +508,7 @@ var FaceView = defineObject(BaseObject,
 			}
 			
 			if (view !== null) {
+				// By calling getMessageBottomPos, the window is displayed toward the bottom.
 				view.drawMessageView(isActive, BaseMessageView.getMessageBottomPos.call(view));
 			}
 		}
