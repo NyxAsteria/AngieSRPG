@@ -176,6 +176,9 @@ var StateScoreChecker = {
 		
 		for (i = 0; i < count; i++) {
 			item = UnitItemControl.getItem(unit, i);
+			if (item === null) {
+				continue;
+			}
 			
 			if (flag & BadStateFlag.PHYSICS) {
 				if (ItemControl.isWeaponAvailable(unit, item) && item.getWeaponCategoryType() !== WeaponCategoryType.MAGIC) {

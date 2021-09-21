@@ -323,6 +323,10 @@ var MetamorphozeControl = {
 		
 		for (i = 0; i < count; i++) {
 			item = UnitItemControl.getItem(unit, i);
+			if (item === null) {
+				continue;
+			}
+			
 			if (!item.isWeapon() && item.getItemType() === ItemType.METAMORPHOZE) {
 				if (item.getLimit() === WeaponLimitValue.BROKEN) {
 					UnitItemControl.cutItem(unit, i);

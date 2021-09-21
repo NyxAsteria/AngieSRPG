@@ -740,10 +740,15 @@ var AnimeMotion = defineObject(BaseObject,
 		this._counter.setCounterInfo(value - 1);
 	},
 	
+	// 
+	_isSoundEnabled: function() {
+		return !this._isLockSound && this._animeData.isSoundFrame(this._motionId, this._frameIndex);
+	},
+	
 	_checkSound: function() {
 		var soundHandle;
 		
-		if (!this._isLockSound && this._animeData.isSoundFrame(this._motionId, this._frameIndex)) {
+		if (this._isSoundEnabled()) {
 			soundHandle = this._animeData.getSoundHandle(this._motionId, this._frameIndex);
 			MediaControl.soundPlay(soundHandle);
 		}

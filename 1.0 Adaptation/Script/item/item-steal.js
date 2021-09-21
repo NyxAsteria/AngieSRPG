@@ -169,6 +169,10 @@ var StealItemAI = defineObject(BaseItemAI,
 		
 		for (i = 0; i < count; i++) {
 			item = UnitItemControl.getItem(combination.targetUnit, i);
+			if (item === null) {
+				continue;
+			}
+			
 			if (item.isImportance() || item.isTradeDisabled()) {
 				continue;
 			}

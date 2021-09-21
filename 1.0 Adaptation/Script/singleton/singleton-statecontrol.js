@@ -183,6 +183,10 @@ var StateControl = {
 		count = UnitItemControl.getPossessionItemCount(unit);
 		for (i = 0; i < count; i++) {
 			item = UnitItemControl.getItem(unit, i);
+			if (item === null) {
+				continue;
+			}
+			
 			if (item.isWeapon()) {
 				continue;
 			}

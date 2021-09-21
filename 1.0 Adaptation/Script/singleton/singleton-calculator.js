@@ -17,16 +17,16 @@ var AbilityCalculator = {
 	},
 	
 	getHit: function(unit, weapon) {
-		// Hit rate formula. Weapon hit rate + (Ski * 2) + Luk
-		return weapon.getHit() + (RealBonus.getSki(unit) * 2) + RealBonus.getLuk(unit);
+		// Hit rate formula. Weapon hit rate + (Ski * 3)
+		return weapon.getHit() + (RealBonus.getSki(unit) * 3);
 	},
 	
 	getAvoid: function(unit) {
 		var avoid, terrain;
 		var cls = unit.getClass();
 		
-		// Avoid is (Spd * 2) + Luk
-		avoid = RealBonus.getSpd(unit) * 2 + RealBonus.getLuk(unit);
+		// Avoid is (Spd * 2)
+		avoid = RealBonus.getSpd(unit) * 2;
 		
 		// If class type gains terrain bonus, add the avoid rate of terrain.
 		if (cls.getClassType().isTerrainBonusEnabled()) {
@@ -41,14 +41,12 @@ var AbilityCalculator = {
 	
 	getCritical: function(unit, weapon) {
 		// Critical rate formula. Ski + Weapon critical rate
-		//return RealBonus.getSki(unit) + weapon.getCritical();
-		return RealBonus.getSki(unit)*2 + weapon.getCritical();
+		return RealBonus.getSki(unit) + weapon.getCritical();
 	},
 	
 	getCriticalAvoid: function(unit) {
 		// Luk is a critical avoid rate.
-		//return RealBonus.getLuk(unit);
-		return 0;
+		return RealBonus.getLuk(unit);
 	},
 	
 	getAgility: function(unit, weapon) {
@@ -472,9 +470,11 @@ var Calculator = {
 		var limitMax = item.getLimitMax();
 		
 		if (limitMax === 0) {
+			// Weapons that can be used infinitely (durability of 0) can be sold for half the purchasing cost.
 			d = 1;
 		}
 		else if (limitMax === WeaponLimitValue.BROKEN) {
+			// Broken weapons can only be sold for 0 gold.
 			d = 0;
 		}
 		else {
@@ -664,8 +664,16 @@ var SupportCalculator = {
 	},
 	
 	_getListArray: function(unit) {
-		var listArray;
-		var filter = 0;
+		var filter = this._getSupportFilterFlag(unit);
+		var listArray = FilterControl.getListArray(filter);
+		
+		this._appendGuestList(listArray, filter);
+		
+		return listArray;
+	},
+	
+	_getSupportFilterFlag: function(unit) {
+		var filter;
 		var unitType = unit.getUnitType();
 		
 		if (unitType === UnitType.PLAYER) {
@@ -680,10 +688,7 @@ var SupportCalculator = {
 			// filter = UnitFilterFlag.PLAYER | UnitFilterFlag.ALLY;
 		}
 		
-		listArray = FilterControl.getListArray(filter);
-		this._appendGuestList(listArray, filter);
-		
-		return listArray;
+		return filter;
 	},
 	
 	_appendGuestList: function(listArray, filter) {
