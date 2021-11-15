@@ -191,7 +191,6 @@ var BaseAttackInfoBuilder = defineObject(BaseObject,
 		var attackInfo = StructureBuilder.buildAttackInfo();
 		var terrain = PosChecker.getTerrainFromPosEx(unitDest.getMapX(), unitDest.getMapY());
 		var terrainLayer = PosChecker.getTerrainFromPos(unitDest.getMapX(), unitDest.getMapY());
-		var direction = PosChecker.getSideDirection(unitSrc.getMapX(), unitSrc.getMapY(), unitDest.getMapX(), unitDest.getMapY());
 		var picBackground = this._getBackgroundImage(attackParam, terrain, terrainLayer);
 		
 		attackInfo.unitSrc = unitSrc;
@@ -199,12 +198,18 @@ var BaseAttackInfoBuilder = defineObject(BaseObject,
 		attackInfo.terrainLayer = terrainLayer;
 		attackInfo.terrain = terrain;
 		attackInfo.picBackground = picBackground;
-		attackInfo.isDirectAttack = direction !== DirectionType.NULL;
+		attackInfo.isDirectAttack = this._isDirectAttack(unitSrc, unitDest);
 		attackInfo.isCounterattack = AttackChecker.isCounterattack(unitSrc, unitDest);
 		
 		this._setMagicWeaponAttackData(attackInfo);
 		
 		return attackInfo;
+	},
+	
+	_isDirectAttack: function(unitSrc, unitDest) {
+		var direction = PosChecker.getSideDirection(unitSrc.getMapX(), unitSrc.getMapY(), unitDest.getMapX(), unitDest.getMapY());
+		
+		return direction !== DirectionType.NULL;
 	},
 	
 	_getBackgroundImage: function(attackParam, terrain, terrainLayer) {

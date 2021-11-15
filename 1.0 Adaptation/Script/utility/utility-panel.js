@@ -244,15 +244,7 @@ var UnitRangePanel = defineObject(BaseObject,
 	},
 	
 	drawRangePanel: function() {
-		if (this._unit === null) {
-			return;
-		}
-		
-		if (PosChecker.getUnitFromPos(this._x, this._y) !== this._unit) {
-			return;
-		}
-		
-		if (this._unit.isWait()) {
+		if (!this._isRangeDrawable()) {
 			return;
 		}
 		
@@ -310,6 +302,22 @@ var UnitRangePanel = defineObject(BaseObject,
 		obj.mov = this._getRangeMov(unit);
 		
 		return obj;
+	},
+	
+	_isRangeDrawable: function() {
+		if (this._unit === null) {
+			return false;
+		}
+		
+		if (PosChecker.getUnitFromPos(this._x, this._y) !== this._unit) {
+			return false;
+		}
+		
+		if (this._unit.isWait()) {
+			return false;
+		}
+		
+		return true;
 	},
 	
 	_getRangeMov: function(unit) {

@@ -971,28 +971,10 @@ var AttackChecker = {
 	
 	// Check if the targetUnit can counterattack the unit.
 	isCounterattack: function(unit, targetUnit) {
-		var weapon, indexArray;
+		var indexArray;
+		var weapon = this._getCounterWeapon(unit, targetUnit);
 		
-		if (!Calculator.isCounterattackAllowed(unit, targetUnit)) {
-			return false;
-		}
-		
-		weapon = ItemControl.getEquippedWeapon(unit);
-		if (weapon !== null && weapon.isOneSide()) {
-			// If the attacker is equipped with "One Way" weapon, no counterattack occurs.
-			return false;
-		}
-		
-		// Get the equipped weapon of those who is attacked.
-		weapon = ItemControl.getEquippedWeapon(targetUnit);
-		
-		// If no weapon is equipped, cannot counterattack.
 		if (weapon === null) {
-			return false;
-		}
-		
-		// If "One Way" weapon is equipped, cannot counterattack.
-		if (weapon.isOneSide()) {
 			return false;
 		}
 		
@@ -1012,6 +994,35 @@ var AttackChecker = {
 		indexArray = IndexArray.createIndexArray(targetUnit.getMapX(), targetUnit.getMapY(), weapon);
 		
 		return IndexArray.findPos(indexArray, x, y);
+	},
+	
+	_getCounterWeapon: function(unit, targetUnit) {
+		var weapon;
+		
+		if (!Calculator.isCounterattackAllowed(unit, targetUnit)) {
+			return null;
+		}
+		
+		weapon = ItemControl.getEquippedWeapon(unit);
+		if (weapon !== null && weapon.isOneSide()) {
+			// If the attacker is equipped with "One Way" weapon, no counterattack occurs.
+			return null;
+		}
+		
+		// Get the equipped weapon of those who is attacked.
+		weapon = ItemControl.getEquippedWeapon(targetUnit);
+		
+		// If no weapon is equipped, cannot counterattack.
+		if (weapon === null) {
+			return null;
+		}
+		
+		// If "One Way" weapon is equipped, cannot counterattack.
+		if (weapon.isOneSide()) {
+			return null;
+		}
+		
+		return weapon;
 	}
 };
 

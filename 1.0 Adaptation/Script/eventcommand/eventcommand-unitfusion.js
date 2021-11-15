@@ -176,6 +176,10 @@ var CatchFusionAction = defineObject(BaseFusionAction,
 			return false;
 		}
 		
+		if (!this._checkTargetFusionInfo()) {
+			return false;
+		}
+		
 		if (!FusionControl.isControllable(this._parentUnit, this._slideUnit, this._fusionData)) {
 			return false;
 		}
@@ -245,6 +249,51 @@ var CatchFusionAction = defineObject(BaseFusionAction,
 		}
 		
 		return metamorphozeData.getChangeAnime();
+	},
+	
+	_checkTargetFusionInfo: function() {
+		var fusionAction, fusionParam, result;
+		var fusionParent = FusionControl.getFusionParent(this._slideUnit);
+		var fusionChild = FusionControl.getFusionChild(this._slideUnit);
+		
+		if (fusionParent === null && fusionChild === null) {
+			return true;
+		}
+		
+		if (!this._isForceCatch()) {
+			return false;
+		}
+		
+		fusionParam = StructureBuilder.buildFusionParam();
+		
+		if (fusionChild !== null) {
+			fusionAction = createObject(ReleaseFusionAction);
+			
+			fusionParam.parentUnit = this._slideUnit;
+			fusionParam.targetUnit = null;
+			
+			result = true;
+		}
+		else {
+			fusionAction = createObject(UnitTradeFusionAction);
+			
+			fusionParam.parentUnit = FusionControl.getFusionParent(this._slideUnit);
+			fusionParam.targetUnit = this._parentUnit;
+			
+			result = false;
+		}
+		
+		fusionParam.fusionData = this._fusionData;
+		fusionParam.direction = DirectionType.NULL;
+		
+		fusionAction.setFusionParam(fusionParam);
+		fusionAction.skipFusionAction();
+		
+		return result;
+	},
+	
+	_isForceCatch: function() {
+		return true;
 	}
 }
 );
