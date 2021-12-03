@@ -276,6 +276,7 @@ var UnitRenderer = {
 		}
 	},
 	
+	// This method is different from GraphicsRenderer.getGraphics in that the color is explicity specified in this method.
 	_getGraphics: function(handle, colorIndex) {
 		var isRuntime, list;
 		var handleType = handle.getHandleType();

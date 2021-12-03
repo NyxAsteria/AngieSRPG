@@ -1394,6 +1394,7 @@ var RealEffect = defineObject(BaseCustomEffect,
 			isRight = this._realBattle.getPassiveBattler() === this._realBattle.getBattler(true);
 		}
 		
+		// The position based on the enlargement/shrinkage of the effect can be retrieved if realEffect is specified in the first argument.
 		pos = this._realBattle.getPassiveBattler().getAnimeMotion().getEffectPos(this, isRight);	
 		
 		this._motion._xKey = pos.x;
@@ -1401,15 +1402,17 @@ var RealEffect = defineObject(BaseCustomEffect,
 	},
 	
 	_isCurrentFrameCheck: function() {
+		// It is acceptable to return false for real battle effects that deal damage if the size of the first frame is the same as the other frames.
 		return true;
 	},
 	
-	// In order to play an effect that continues shrinking even after "Detect Hit on this frame" has passed,
-	// this method ought to return true.
+	// In order to play an effect that continues shrinking even after "Detect Hit on this frame" has passed, this method ought to return true.
 	_isUpdatable: function() {
 		var motionCategoryType = this._realBattle.getPassiveBattler().getMotionCategoryType();
 		
 		if (motionCategoryType === MotionCategoryType.AVOID || motionCategoryType === MotionCategoryType.DAMAGE) {
+			// There may be motions incorporated in the animation editor that retreat when avoiding attacks or taking damage.
+			// In these cases, it would be awkward if the effect retreated with the motion, so the effect's position should not be updated.
 			return false;
 		}
 		

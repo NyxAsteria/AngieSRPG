@@ -256,30 +256,36 @@ var CatchFusionAction = defineObject(BaseFusionAction,
 		var fusionParent = FusionControl.getFusionParent(this._slideUnit);
 		var fusionChild = FusionControl.getFusionChild(this._slideUnit);
 		
+		// Checks that the target to be caught is not holding someone and is not being held by someone.
 		if (fusionParent === null && fusionChild === null) {
 			return true;
 		}
 		
+		// Checks whether the target should try to be forcefully caught, even if the target is already holding someone.
 		if (!this._isForceCatch()) {
 			return false;
 		}
 		
 		fusionParam = StructureBuilder.buildFusionParam();
 		
+		// Target is holding someone, so first the unit being held needs to be released.
 		if (fusionChild !== null) {
 			fusionAction = createObject(ReleaseFusionAction);
 			
 			fusionParam.parentUnit = this._slideUnit;
 			fusionParam.targetUnit = null;
 			
+			// The unit is done being released, so it is acceptable to start catching the target.
 			result = true;
 		}
 		else {
+			// The target is being held by someone, so the target needs to be traded from that someone.
 			fusionAction = createObject(UnitTradeFusionAction);
 			
 			fusionParam.parentUnit = FusionControl.getFusionParent(this._slideUnit);
 			fusionParam.targetUnit = this._parentUnit;
 			
+			// There is no need to continue processing since the catch will have taken place during trading.
 			result = false;
 		}
 		

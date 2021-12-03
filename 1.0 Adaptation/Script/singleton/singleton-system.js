@@ -191,6 +191,8 @@ var GameOverChecker = {
 		var list = PlayerList.getSortieList();
 		var isGameOver = false;
 		
+		// The concept of a game over only exists in SceneType.FREE.
+		// RestSession does not have isMapState implemented, so it is considered a countermeasure for when GameOver is called in the base.
 		if (root.getBaseScene() !== SceneType.FREE) {
 			return false;
 		}

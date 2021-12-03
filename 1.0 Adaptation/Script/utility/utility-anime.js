@@ -740,7 +740,7 @@ var AnimeMotion = defineObject(BaseObject,
 		this._counter.setCounterInfo(value - 1);
 	},
 	
-	// 
+	// Overwrite this method for cases in which you do not want to play sound effects when a unit has a certain condition.
 	_isSoundEnabled: function() {
 		return !this._isLockSound && this._animeData.isSoundFrame(this._motionId, this._frameIndex);
 	},
