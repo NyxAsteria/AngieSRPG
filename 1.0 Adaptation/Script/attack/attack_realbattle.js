@@ -1376,6 +1376,12 @@ var RealEffect = defineObject(BaseCustomEffect,
 		return this._motion;
 	},
 	
+	enableSpriteScaling: function(isScaling) {
+		if (isScaling) {
+			this._motion._realEffect = this;
+		}
+	},
+	
 	updateKeyPos: function() {
 		var isRight, pos;
 		
@@ -2093,6 +2099,7 @@ var UIBattleLayout = defineObject(BaseObject,
 			pos = battler.getEffectPos(anime);
 			effect = this._realBattle.createEffect(anime, pos.x + offsetPos.x, pos.y + offsetPos.y, isRight, false);
 			effect.setAsync(this._isDamageEffectAsync());
+			effect.enableSpriteScaling(this._isDamageEffectScaling());
 		}
 		
 		if (isNoDamage) {
@@ -2109,11 +2116,17 @@ var UIBattleLayout = defineObject(BaseObject,
 			pos = battler.getEffectPos(anime);
 			effect = this._realBattle.createEffect(anime, pos.x + offsetPos.x, pos.y + offsetPos.y + this._getTextAnimeOffsetY(), isRight, false);
 			effect.setAsync(false);
+			effect.enableSpriteScaling(this._isDamageEffectScaling());
 		}
 		
 		if (!isNoDamage && this._isDamagePopupDisplayable()) {
 			this._showDamagePopup(battler, this._realBattle.getAttackOrder().getPassiveFullDamage(), isCritical);
 		}
+	},
+	
+	_isDamageEffectScaling: function() {
+		// Returns true if the scaling factor of the damage effect is not constant.
+		return false;
 	},
 	
 	_isDamageEffectAsync: function() {
@@ -2143,7 +2156,7 @@ var UIBattleLayout = defineObject(BaseObject,
 		var pos = battler.getEffectPos(anime);
 		var isRight = battler === this._realBattle.getBattler(true);
 		
-		this._realBattle.createEffect(anime, pos.x, pos.y, isRight, false);
+		return this._realBattle.createEffect(anime, pos.x, pos.y, isRight, false);
 	},
 	
 	_showAvoidAnime: function(battler) {
@@ -2151,7 +2164,7 @@ var UIBattleLayout = defineObject(BaseObject,
 		var pos = battler.getEffectPos(anime);
 		var isRight = battler === this._realBattle.getBattler(true);
 		
-		this._realBattle.createEffect(anime, pos.x, pos.y + this._getTextAnimeOffsetY(), isRight, false);
+		return this._realBattle.createEffect(anime, pos.x, pos.y + this._getTextAnimeOffsetY(), isRight, false);
 	},
 	
 	_getTextAnimeOffsetY: function() {

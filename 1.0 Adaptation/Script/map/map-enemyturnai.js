@@ -687,7 +687,6 @@ var AIFirstStage_UnitSupportStatusTable = {
 			skill = arr[i].skill;
 			if (skill.getRangeType() === SelectionRangeType.SELFONLY) {
 				this._addStatus(totalStatus, skill.getSupportStatus());
-				break;
 			}
 		}
 	},
@@ -706,7 +705,7 @@ var AIFirstStage_UnitSupportStatusTable = {
 					continue;
 				}
 				
-				this._checkFriendSupportSkillInternal(unit, targetUnit, totalStatus);
+				this._checkFriendSupportSkillInternal(targetUnit, unit, totalStatus);
 			}
 		}
 	},
@@ -722,7 +721,6 @@ var AIFirstStage_UnitSupportStatusTable = {
 				if (SupportCalculator._isSupportable(unit, targetUnit, skill)) {
 					this._addStatus(totalStatus, skill.getSupportStatus());
 				}
-				break;
 			}
 		}
 	},

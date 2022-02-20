@@ -41,7 +41,7 @@ var AbilityCalculator = {
 	
 	getCritical: function(unit, weapon) {
 		// Critical rate formula. Ski + Weapon critical rate
-		return 2 * RealBonus.getSki(unit) + weapon.getCritical();
+		return RealBonus.getSki(unit)*2 + weapon.getCritical();
 	},
 	
 	getCriticalAvoid: function(unit) {

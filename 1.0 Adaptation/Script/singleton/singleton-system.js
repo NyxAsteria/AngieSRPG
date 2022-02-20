@@ -915,7 +915,7 @@ var AttackChecker = {
 		
 		for (i = 0; i < count; i++) {
 			item = UnitItemControl.getItem(unit, i);
-			if (item !== null && ItemControl.isWeaponAvailable(unit, item)) {
+			if (item !== null && ItemControl.isWeaponAvailable(unit, item) && this._isWeaponEnabled(item)) {
 				indexArray = this.getAttackIndexArray(unit, item, true);
 				if (indexArray.length !== 0) {
 					return true;
@@ -1024,7 +1024,17 @@ var AttackChecker = {
 			return null;
 		}
 		
+		if (!this._isWeaponEnabled(weapon)) {
+			return null;
+		}
+		
 		return weapon;
+	},
+	
+	_isWeaponEnabled: function(weapon) {
+		// Checks whether the Attack command or counterattacks are allowed with the specified weapon.
+		// Return false for cases where the weapon can be equipped but it's broken and you don't want it to be used in battle.
+		return true
 	}
 };
 

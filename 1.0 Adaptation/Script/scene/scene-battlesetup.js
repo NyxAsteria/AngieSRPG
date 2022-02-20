@@ -346,6 +346,12 @@ var OpeningEventFlowEntry = defineObject(BaseFlowEntry,
 	},
 	
 	_doLastAction: function() {
+		// 
+		// 
+		if (SceneManager._sceneType !== SceneType.BATTLESETUP) {
+			return;
+		}
+		
 		// Deactivate non visible state.
 		SceneManager.getActiveScene().getSortieSetting().startSortieSetting(false);
 		
